@@ -3,11 +3,18 @@ const fs = require('fs');
 class UsefulDataMapper {
     #worldSaveData;
     #palNames;
+    #skillNames;
 
     constructor(worldSaveData) {
         this.#worldSaveData = worldSaveData;
         this.#palNames = Object.entries(JSON.parse(fs.readFileSync('./dumped-game-files/palnames.json', 'utf-8'))[0]['Rows'])
             .map(([key, value]) => ({key: key.replace('PAL_NAME_', ''), value: value['TextData']['LocalizedString']}))
+            .reduce((acc, curr) => {
+                acc[curr.key] = curr.value;
+                return acc;
+            }, {});
+        this.#skillNames = Object.entries(JSON.parse(fs.readFileSync('./dumped-game-files/skillnametext.json', 'utf-8'))[0]['Rows'])
+            .map(([key, value]) => ({key, value: value['TextData']['LocalizedString']}))
             .reduce((acc, curr) => {
                 acc[curr.key] = curr.value;
                 return acc;
@@ -108,8 +115,14 @@ class UsefulDataMapper {
                 level: pal['Level'],
                 exp: pal['Exp'],
                 moves: {
-                    equiped: pal['EquipWaza'].map((move) => move.split('::')[1]),
-                    mastered: pal['MasteredWaza'].map((move) => move.split('::')[1])
+                    equiped: pal['EquipWaza'].map((move) => {
+                        const id = move.split('::')[1];
+                        return {id, name: this.#skillNames['ACTION_SKILL_' + id]};
+                    }),
+                    mastered: pal['MasteredWaza'].map((move) => {
+                        const id = move.split('::')[1];
+                        return {id, name: this.#skillNames['ACTION_SKILL_' + id]};
+                    })
                 },
                 talent: {
                     hp: pal['Talent_HP'],
@@ -117,7 +130,7 @@ class UsefulDataMapper {
                     shot: pal['Talent_Shot'],
                     defense: pal['Talent_Defense']
                 },
-                passiveSkillList: pal['PassiveSkillList'], /* todo map */
+                passiveSkillList: pal['PassiveSkillList']?.map((id) => ({id, name: this.#skillNames['PASSIVE_' + id]})),
                 previousOwnerIds: pal['OldOwnerPlayerUIds'],
                 craftSpeed: pal['CraftSpeed'],
                 craftSpeeds: pal['CraftSpeeds'].map((record) => ({
