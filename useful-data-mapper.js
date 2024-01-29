@@ -6,27 +6,26 @@ class UsefulDataMapper {
     }
 
     characterSaveParameterMapper() {
-        const toPlayerGroups = (acc, curr) => {
-            const playerId = curr.key['PlayerUId'].value;
-            if (!acc[playerId]) {
-                acc[playerId] = [];
+        const characterSaveParameterMap = this.#worldSaveData.value['CharacterSaveParameterMap'].value;
+        const players = {};
+        const pals = [];
+
+        for (let characterSaveParameter of characterSaveParameterMap) {
+            const saveParameter = characterSaveParameter.value['RawData'].value.object['SaveParameter'].value;
+            if (saveParameter['IsPlayer']?.value) {
+                const playerId = characterSaveParameter.key['PlayerUId'].value;
+                players[playerId] = {userData: this.formatRecord(saveParameter), pals: []};
+            } else {
+                pals.push(saveParameter);
             }
-            acc[playerId].push(curr.value['RawData'].value.object['SaveParameter'].value);
-            return acc;
-        };
+        }
 
-        const playerGroups = this.#worldSaveData.value['CharacterSaveParameterMap'].value.reduce(toPlayerGroups, {});
+        for (let pal of pals) {
+            const ownerId = pal['OwnerPlayerUId'].value;
+            players[ownerId].pals.push(this.formatRecord(pal));
+        }
 
-        return Object.entries(playerGroups)
-            .map(([key, records]) => {
-                const indexOfPlayerData = records.findIndex((record) => record['IsPlayer'].value);
-                const userData = records.splice(indexOfPlayerData, 1)[0];
-                return {
-                    userId: key,
-                    userData: this.formatRecord(userData),
-                    extraData: records.map(this.formatRecord.bind(this))
-                };
-            });
+        return players;
     }
 
     groupSaveDataMapper() {
@@ -83,7 +82,7 @@ class UsefulDataMapper {
     }
 
     getPlayerById(players, id) {
-        const {userData, extraData} = players.find((player) => player.userId === id);
+        const {userData, pals} = players[id];
 
         const playerData = {
             id,
@@ -92,10 +91,10 @@ class UsefulDataMapper {
             name: userData['NickName']
         };
 
-        const palData = extraData.map((pal) => {
+        const palData = pals.map((pal) => {
             return {
                 characterId: pal['CharacterID'], /* todo map */
-                gender: pal['Gender'].split('::')[1],
+                gender: pal['Gender']?.split('::')[1],
                 level: pal['Level'],
                 exp: pal['Exp'],
                 moves: {

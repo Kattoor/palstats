@@ -343,7 +343,7 @@ class ArchiveReader {
             const orgType = this.#bufferWrapper.readInt8();
             const org = {
                 orgType,
-                baseIds: this.readTypeArray(this.readUuid)
+                baseIds: this.readTypeArray(this.readUuid.bind(this))
             };
             groupData = {...groupData, ...org};
         }
@@ -351,7 +351,7 @@ class ArchiveReader {
             const baseCampLevel = this.#bufferWrapper.readInt32()
             const guild = {
                 baseCampLevel,
-                mapObjectInstanceIdsBaseCampPoints: this.readTypeArray(this.readUuid),
+                mapObjectInstanceIdsBaseCampPoints: this.readTypeArray(this.readUuid.bind(this)),
                 guildName: this.readString()
             };
             groupData = {...groupData, ...guild};
