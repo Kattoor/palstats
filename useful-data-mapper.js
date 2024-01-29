@@ -1,8 +1,17 @@
+const fs = require('fs');
+
 class UsefulDataMapper {
     #worldSaveData;
+    #palNames;
 
     constructor(worldSaveData) {
         this.#worldSaveData = worldSaveData;
+        this.#palNames = Object.entries(JSON.parse(fs.readFileSync('./dumped-game-files/palnames.json', 'utf-8'))[0]['Rows'])
+            .map(([key, value]) => ({key: key.replace('PAL_NAME_', ''), value: value['TextData']['LocalizedString']}))
+            .reduce((acc, curr) => {
+                acc[curr.key] = curr.value;
+                return acc;
+            }, {});
     }
 
     characterSaveParameterMapper() {
@@ -93,7 +102,8 @@ class UsefulDataMapper {
 
         const palData = pals.map((pal) => {
             return {
-                characterId: pal['CharacterID'], /* todo map */
+                characterId: pal['CharacterID'],
+                characterName: this.#palNames[pal['CharacterID']],
                 gender: pal['Gender']?.split('::')[1],
                 level: pal['Level'],
                 exp: pal['Exp'],
