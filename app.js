@@ -12,10 +12,13 @@ const header = archiveReader.readHeader();
 const properties = archiveReader.readProperties();
 
 const usefulDataMapper = new UsefulDataMapper(properties.worldSaveData);
+
 const players = usefulDataMapper.characterSaveParameterMapper();
 const guilds = usefulDataMapper.groupSaveDataMapper();
+const combinedData = usefulDataMapper.combineGuildsAndPlayers(players, guilds);
 
 const replacerFunction = (key, value) => typeof value === 'bigint' ? value.toString() : value;
 
 fs.writeFileSync('./out/players.json', JSON.stringify(players, replacerFunction, 4));
 fs.writeFileSync('./out/guilds.json', JSON.stringify(guilds, replacerFunction, 4));
+fs.writeFileSync('./out/combined.json', JSON.stringify(combinedData, replacerFunction, 4));
