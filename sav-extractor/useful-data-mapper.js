@@ -2,23 +2,9 @@ const fs = require('fs');
 
 class UsefulDataMapper {
     #worldSaveData;
-    #palNames;
-    #skillNames;
 
     constructor(worldSaveData) {
         this.#worldSaveData = worldSaveData;
-        this.#palNames = Object.entries(JSON.parse(fs.readFileSync('./dumped-game-files/palnames.json', 'utf-8'))[0]['Rows'])
-            .map(([key, value]) => ({key: key.replace('PAL_NAME_', ''), value: value['TextData']['LocalizedString']}))
-            .reduce((acc, curr) => {
-                acc[curr.key] = curr.value;
-                return acc;
-            }, {});
-        this.#skillNames = Object.entries(JSON.parse(fs.readFileSync('./dumped-game-files/skillnametext.json', 'utf-8'))[0]['Rows'])
-            .map(([key, value]) => ({key, value: value['TextData']['LocalizedString']}))
-            .reduce((acc, curr) => {
-                acc[curr.key] = curr.value;
-                return acc;
-            }, {});
     }
 
     characterSaveParameterMapper() {
@@ -32,16 +18,16 @@ class UsefulDataMapper {
                 const playerId = characterSaveParameter.key['PlayerUId'].value;
                 players[playerId] = {userData: this.formatRecord(saveParameter), pals: []};
             } else {
-                pals.push(saveParameter);
+                pals.push(this.formatRecord(saveParameter));
             }
         }
 
         for (let pal of pals) {
-            const ownerId = pal['OwnerPlayerUId'].value;
-            players[ownerId].pals.push(this.formatRecord(pal));
+            const ownerId = pal['OwnerPlayerUId'];
+            players[ownerId].pals.push(pal);
         }
 
-        return players;
+        return {players, pals};
     }
 
     groupSaveDataMapper() {
@@ -108,21 +94,18 @@ class UsefulDataMapper {
         };
 
         const palData = pals.map((pal) => {
+            const isBoss = pal['CharacterID'].startsWith('BOSS_') || pal['CharacterID'].startsWith('Boss_');
+            const characterId = pal['CharacterID'].slice(isBoss ? 5 : 0);
             return {
-                characterId: pal['CharacterID'],
-                characterName: this.#palNames[pal['CharacterID']],
+                characterId: characterId === 'Sheepball' ? 'SheepBall' : characterId,
+                isBoss,
+                isHuman: pal['MasteredWaza'].length === 1 && pal['MasteredWaza'][0] === 'EPalWazaID::Human_Punch',
                 gender: pal['Gender']?.split('::')[1],
-                level: pal['Level'],
-                exp: pal['Exp'],
+                level: pal['Level'] || 1,
+                exp: pal['Exp'] || 0,
                 moves: {
-                    equiped: pal['EquipWaza'].map((move) => {
-                        const id = move.split('::')[1];
-                        return {id, name: this.#skillNames['ACTION_SKILL_' + id]};
-                    }),
-                    mastered: pal['MasteredWaza'].map((move) => {
-                        const id = move.split('::')[1];
-                        return {id, name: this.#skillNames['ACTION_SKILL_' + id]};
-                    })
+                    equiped: pal['EquipWaza'].map((move) => move.split('::')[1]),
+                    mastered: pal['MasteredWaza'].map((move) => move.split('::')[1])
                 },
                 talent: {
                     hp: pal['Talent_HP'],
@@ -130,7 +113,7 @@ class UsefulDataMapper {
                     shot: pal['Talent_Shot'],
                     defense: pal['Talent_Defense']
                 },
-                passiveSkillList: pal['PassiveSkillList']?.map((id) => ({id, name: this.#skillNames['PASSIVE_' + id]})),
+                passiveSkillList: pal['PassiveSkillList'],
                 previousOwnerIds: pal['OldOwnerPlayerUIds'],
                 craftSpeed: pal['CraftSpeed'],
                 craftSpeeds: pal['CraftSpeeds'].map((record) => ({
@@ -141,6 +124,82 @@ class UsefulDataMapper {
         });
 
         return {player: {data: playerData, pals: palData}};
+    }
+
+    transformDumpedGameFiles() {
+        const palNames = Object.entries(JSON.parse(fs.readFileSync('./dumped-game-files/DT_PalNameText.json', 'utf-8'))[0]['Rows'])
+            .map(([key, value]) => ({key: key.replace('PAL_NAME_', ''), value: value['TextData']['LocalizedString']}))
+            .reduce((acc, curr) => {
+                acc[curr.key] = curr.value;
+                return acc;
+            }, {});
+
+        const skillNames = Object.entries(JSON.parse(fs.readFileSync('./dumped-game-files/DT_SkillNameText.json', 'utf-8'))[0]['Rows'])
+            .map(([key, value]) => ({key, value: value['TextData']['LocalizedString']}))
+            .reduce((acc, curr) => {
+                acc[curr.key] = curr.value;
+                return acc;
+            }, {});
+
+        const activeSkillsData = Object.entries(JSON.parse(fs.readFileSync('./dumped-game-files/DT_WazaDataTable.json', 'utf-8'))[0]['Rows'])
+            .map(([key, value]) => ({
+                key: value['WazaType'],
+                value: value['Element']
+            }))
+            .reduce((acc, curr) => {
+                acc[curr.key] = curr.value;
+                return acc;
+            }, {});
+
+        const palDescriptions = Object.entries(JSON.parse(fs.readFileSync('./dumped-game-files/DT_PalLongDescriptionText.json', 'utf-8'))[0]['Rows'])
+            .map(([key, value]) => ({
+                key: key.replace('PAL_LONG_DESC_', ''),
+                value: value['TextData']['LocalizedString']
+            }))
+            .reduce((acc, curr) => {
+                curr.value = curr.value.replace(/<characterName id=\|(.*)\|\/>/, (_, name) => palNames[name]);
+                acc[curr.key] = curr.value;
+                return acc;
+            }, {});
+
+        const passiveSkillData = Object.entries(JSON.parse(fs.readFileSync('./dumped-game-files/DT_PassiveSkill_Main.json', 'utf-8'))[0]['Rows'])
+            .map(([key, value]) => ({
+                key,
+                rank: value['Rank'],
+                effects: [
+                    value['EffectValue1'],
+                    value['EffectValue2'],
+                    value['EffectValue3']
+                ]
+            }))
+            .reduce((acc, curr) => {
+                acc[curr.key] = {rank: curr.rank, effects: curr.effects};
+                return acc;
+            }, {});
+
+        const skillDescriptions = Object.entries(JSON.parse(fs.readFileSync('./dumped-game-files/DT_SkillDescText.json', 'utf-8'))[0]['Rows'])
+            .map(([key, value]) => ({
+                key,
+                value: value['TextData']['LocalizedString']
+            }))
+            .reduce((acc, curr) => {
+                if (curr.key.startsWith('PASSIVE_')) {
+                    const skillData = passiveSkillData[curr.key.replace('PASSIVE_PAL_', '').replace('PASSIVE_', '').replace('_DESC', '')];
+
+                    curr.value = curr.value
+                        .replace('{EffectValue1}', skillData?.effects[0])
+                        .replace('{EffectValue2}', skillData?.effects[1])
+                        .replace('{EffectValue3}', skillData?.effects[2]);
+                }
+
+                curr.value = curr.value.replace(/<characterName id=\|(.*)\|\/>/, (_, name) => palNames[name]);
+                curr.value = curr.value.replace(/<Num(Blue|Red)_\d*>(.*)<\/>/, '$2');
+
+                acc[curr.key] = curr.value;
+                return acc;
+            }, {});
+
+        return {palNames, skillNames, palDescriptions, skillDescriptions, activeSkillsData};
     }
 }
 
