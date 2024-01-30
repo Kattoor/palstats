@@ -46,10 +46,16 @@ function App() {
     }
 
     function getSkillDescription(skillId) {
-        let description = skillDescriptions['PASSIVE_' + skillId];
+        let description = skillDescriptions[skillId];
+        console.log(skillDescriptions);
+        return description;
 
         if (!description) {
             description = skillDescriptions['PASSIVE_PAL_' + skillId]
+        }
+
+        if (!description) {
+            description = skillDescriptions['PAL_' + skillId]
         }
 
         if (description) {
@@ -122,7 +128,7 @@ function App() {
                                     <Card pt={{root: {className: pal.isBoss ? 'bg-[#ff000022]' : null}}}
                                           className="px-4 color-red" key={palIndex} title={palNames[pal.characterId] || pal.characterId}>
                                         <img className="h-16 m-auto rounded-full tooltip"
-                                             src={"https://raw.githubusercontent.com/Kattoor/palimages/main/pal-icons/T_" + (pal.isHuman ? 'CommonHuman' : pal.characterId) + "_icon_normal.png"}
+                                             src={"https://raw.githubusercontent.com/Kattoor/palimages/main/pal-icons/t_" + (pal.isCapturedHuman ? 'commonhuman' : pal.characterId) + "_icon_normal.png"}
                                              data-pr-tooltip={palDescriptions[pal.characterId]}
                                         />
                                         <p className="pt-4">Level <b>{pal.level}</b> ({pal.exp} exp)</p>

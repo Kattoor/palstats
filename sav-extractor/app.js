@@ -13,9 +13,10 @@ const properties = archiveReader.readProperties();
 
 const usefulDataMapper = new UsefulDataMapper(properties.worldSaveData);
 
-const {players, pals} = usefulDataMapper.characterSaveParameterMapper();
-const guilds = usefulDataMapper.groupSaveDataMapper();
-const combinedData = usefulDataMapper.combineGuildsAndPlayers(players, guilds);
+const palDefinitions = usefulDataMapper.getPallDefinitions();
+const {players, pals} = usefulDataMapper.getPlayersAndPals();
+const guilds = usefulDataMapper.getGuilds();
+const combinedData = usefulDataMapper.combineGuildsAndPlayers(players, guilds, palDefinitions);
 const {palNames, skillNames, palDescriptions, skillDescriptions, activeSkillsData} = usefulDataMapper.transformDumpedGameFiles();
 
 const replacerFunction = (key, value) => typeof value === 'bigint' ? value.toString() : value;
