@@ -1,6 +1,6 @@
 import palNames from '../../../sav-extractor/out/dumped-game-files/pal-names.json';
 
-type PalNameKeys = keyof typeof palNames;
+export type PalNameKeys = keyof typeof palNames;
 
 export type SaveFilePlayerWrapper = {player: SaveFilePlayer};
 
