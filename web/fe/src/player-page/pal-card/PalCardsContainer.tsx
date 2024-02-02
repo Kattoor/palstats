@@ -1,9 +1,7 @@
 import PalCard from "./PalCard.tsx";
-import {SelectedPlayer} from "../../guild-page/GuildPage.tsx";
+import {SaveFilePal} from "../../types.ts";
 
-type PalCardsContainerProps = Pick<SelectedPlayer, 'pals'>;
-
-function PalCardsContainer({pals}: PalCardsContainerProps) {
+function PalCardsContainer({pals}: { pals: SaveFilePal[] }) {
     return (
         <div className="flex gap-4 flex-wrap justify-center">
             {

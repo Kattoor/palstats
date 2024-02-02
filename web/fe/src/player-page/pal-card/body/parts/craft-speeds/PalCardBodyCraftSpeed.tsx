@@ -1,8 +1,6 @@
-import {CraftSpeed} from "../../../../../types.ts";
+import {PalCardDataCraftSpeed} from "../../../../../custom-hooks/usePalCardDataFormatter.ts";
 
-type PalCardBodyCraftSpeedProps = CraftSpeed;
-
-function PalCardBodyCraftSpeed({elementUrl, type, rank}: PalCardBodyCraftSpeedProps) {
+function PalCardBodyCraftSpeed({type, rank, elementUrl}: PalCardDataCraftSpeed) {
     return (
         <div
             className="tooltip flex gap-2 pt-1"

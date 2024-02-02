@@ -1,8 +1,6 @@
-import {PalData} from "../../../../../types.ts";
+import {SaveFilePalTalents} from "../../../../../types.ts";
 
-type PalCardBodyTalentProps = Pick<PalData, 'talent'>;
-
-function PalCardBodyTalent({talent}: PalCardBodyTalentProps) {
+function PalCardBodyTalent({talent}: { talent: SaveFilePalTalents }) {
     return (
         <div className="p-2 mt-4 border">
             <p><b>Talents</b></p>

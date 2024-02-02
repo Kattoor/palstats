@@ -1,35 +1,26 @@
 import {Tooltip} from "primereact/tooltip";
 import PalCardsContainer from "./pal-card/PalCardsContainer.tsx";
-import {usePlayerGuildContext} from "../player-guild-context/usePlayerGuildContext.ts";
-import {useNavigate} from "react-router-dom";
-import {useEffect} from "react";
+import {usePlayerGuildContext} from "../custom-contexts/player-guild-context/usePlayerGuildContext.ts";
+import {useParams} from "react-router-dom";
 
 function PlayerPage() {
-    const {selectedGuild, selectedPlayer} = usePlayerGuildContext();
-    const navigate = useNavigate();
+    const {players, pals} = usePlayerGuildContext();
+    const {id} = useParams();
 
-    const shouldNavigateToRoot = selectedGuild === null || selectedPlayer === null;
+    const player = players.find((player) => player.id === id);
 
-    useEffect(() => {
-        if (shouldNavigateToRoot) {
-            navigate('/');
-        }
-    }, []);
-
-    if (shouldNavigateToRoot) {
-        return null;
+    if (!player) {
+        return;
     }
 
-    const guildName = selectedGuild.guildName;
-    const playerName = selectedPlayer.name;
-    const pals = selectedPlayer.pals;
+    const playerName = player.name;
+    const playerPals = pals.filter((pal) => pal.ownerId === id);
 
     return (
         <>
             <Tooltip target=".tooltip"/>
-            <div className="pb-2 text-4xl">Guild: {guildName}</div>
-            <div className="pb-16 text-4xl">Player: {playerName} ({pals.length} pals)</div>
-            <PalCardsContainer pals={pals}/>
+            <div className="pb-16 text-4xl">Player: {playerName} ({playerPals.length} pals)</div>
+            <PalCardsContainer pals={playerPals}/>
         </>
     )
 }

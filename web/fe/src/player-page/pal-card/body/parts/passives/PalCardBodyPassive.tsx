@@ -1,8 +1,6 @@
-import {PassiveSkill} from "../../../../../types.ts";
+import {PalCardDataPassiveSkill} from "../../../../../custom-hooks/usePalCardDataFormatter.ts";
 
-type PalCardBodyPassiveProps = PassiveSkill;
-
-function PalCardBodyPassive({description, name}: PalCardBodyPassiveProps) {
+function PalCardBodyPassive({name, description}: PalCardDataPassiveSkill) {
     return <div className="tooltip" data-pr-tooltip={description}>{name}</div>;
 }
 

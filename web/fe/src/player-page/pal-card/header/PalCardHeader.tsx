@@ -1,6 +1,6 @@
-import {PalData} from "../../../types.ts";
+import {PalCardData} from "../../../custom-hooks/usePalCardDataFormatter.ts";
 
-type PalCardHeaderProps = Pick<PalData, 'isCapturedHuman' | 'characterId' | 'description' | 'level' | 'exp' | 'gender'>;
+type PalCardHeaderProps = Pick<PalCardData, 'isCapturedHuman' | 'characterId' | 'description' | 'level' | 'exp' | 'gender'>;
 
 function PalCardHeader({isCapturedHuman, characterId, description, level, exp, gender}: PalCardHeaderProps) {
     return (

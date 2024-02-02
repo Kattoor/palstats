@@ -1,9 +1,7 @@
-import {PalData} from "../../../../../types.ts";
 import PalCardBodyCraftSpeed from "./PalCardBodyCraftSpeed.tsx";
+import {PalCardDataCraftSpeed} from "../../../../../custom-hooks/usePalCardDataFormatter.ts";
 
-type PalCardBodyCraftSpeedsContainerProps = Pick<PalData, 'craftSpeeds'>;
-
-function PalCardBodyCraftSpeedsContainer({craftSpeeds}: PalCardBodyCraftSpeedsContainerProps) {
+function PalCardBodyCraftSpeedsContainer({craftSpeeds}: { craftSpeeds: PalCardDataCraftSpeed[] }) {
     return (
         <div className="p-2 mt-4 border">
             <p><b>Crafting</b></p>
@@ -11,7 +9,7 @@ function PalCardBodyCraftSpeedsContainer({craftSpeeds}: PalCardBodyCraftSpeedsCo
                 {
                     craftSpeeds
                         .filter(({rank}) => rank !== 0)
-                        .map(({type, elementUrl, rank}, craftSpeedIndex) =>
+                        .map(({type, rank, elementUrl}, craftSpeedIndex) =>
                             <PalCardBodyCraftSpeed
                                 type={type}
                                 rank={rank}

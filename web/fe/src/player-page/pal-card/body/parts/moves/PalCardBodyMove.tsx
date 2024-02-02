@@ -1,8 +1,6 @@
-import {PalMove} from "../../../../../types.ts";
+import {PalCardDataMove} from "../../../../../custom-hooks/usePalCardDataFormatter.ts";
 
-type PalCardBodyMoveProps = PalMove;
-
-function PalCardBodyMove({description, elementUrl, name}: PalCardBodyMoveProps) {
+function PalCardBodyMove({name, description, elementUrl}: PalCardDataMove) {
     return (
         <div
             className="tooltip flex gap-2 pt-1 w-fit"

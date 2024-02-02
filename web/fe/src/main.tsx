@@ -6,9 +6,13 @@ import {PrimeReactProvider} from 'primereact/api';
 import "primereact/resources/themes/md-dark-indigo/theme.css";
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import RootPage from "./root-page/RootPage.tsx";
-import {PlayerGuildProvider} from "./player-guild-context/PlayerGuildContext.tsx";
+import {PlayerGuildProvider} from "./custom-contexts/player-guild-context/PlayerGuildContext.tsx";
 import GuildPage from "./guild-page/GuildPage.tsx";
 import PlayerPage from "./player-page/PlayerPage.tsx";
+
+/* fieldset */
+/* dataview grid */
+
 
 const router = createBrowserRouter([
     {
@@ -16,11 +20,11 @@ const router = createBrowserRouter([
         element: <RootPage/>,
     },
     {
-        path: "/guild",
+        path: "/guild/:id",
         element: <GuildPage/>
     },
     {
-        path: "/player",
+        path: "/player/:id",
         element: <PlayerPage/>
     }
 ]);

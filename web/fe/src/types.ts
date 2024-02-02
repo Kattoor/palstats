@@ -2,87 +2,58 @@ import palNames from '../../../sav-extractor/out/dumped-game-files/pal-names.jso
 
 export type PalNameKeys = keyof typeof palNames;
 
-export type SaveFilePlayerWrapper = {player: SaveFilePlayer};
-
-export interface SaveFileGuild {
-    guildId: string;
-    guildName: string;
-    guildAdminId: string;
-    guildMembers: SaveFilePlayerWrapper[];
+export interface SaveFileGuildMember {
+    playerUid: string;
+    playerName: string;
 }
 
-export interface SaveFileCraftSpeed {
+export interface SaveFileGuild {
+    id: string;
+    name: string;
+    guildAdminUid: string;
+    guildMembers: SaveFileGuildMember[];
+    baseIds: string[];
+    baseCampLevel: number;
+}
+
+export interface SaveFilePalCraftSpeed {
     type: string;
     rank: number;
 }
 
 export interface SaveFilePlayer {
-    data: { id: string; level: number; exp: number; name: string; };
-    pals: {
-        characterId: PalNameKeys;
-        characterName: string;
-        isBoss: boolean;
-        isCapturedHuman: boolean;
-        gender: string;
-        level: number;
-        exp: number;
-        moves: { equiped: string[]; mastered: string[]; };
-        talent: { hp: number; melee: number; shot: number; defense: number; };
-        passiveSkillList: string[];
-        previousOwnerIds: string[];
-        craftSpeed: number;
-        craftSpeeds: SaveFileCraftSpeed[];
-    }[];
-}
-
-export type JsonWithPalNameKeys = Record<PalNameKeys, string>;
-
-
-
-
-
-
-export interface PalData {
-    exp: number;
-    isBoss: boolean;
-    name: string;
-    description: string;
-    isCapturedHuman: boolean;
-    characterId: keyof typeof palNames;
+    id: string;
     level: number;
-    gender: string;
-    moves: {
-        equiped: PalMove[]
-    };
-    craftSpeeds: CraftSpeed[];
-    talent: Talent;
-    passiveSkillList: PassiveSkill[];
-}
-
-
-
-
-
-export interface PassiveSkill {
+    exp: number;
     name: string;
-    description: string;
 }
 
-export interface Talent {
+export interface SaveFilePalMoves {
+    equiped: string[];
+    mastered: string[]
+}
+
+export interface SaveFilePalTalents {
     hp: number;
     melee: number;
     shot: number;
     defense: number;
 }
 
-export interface CraftSpeed {
-    type: string;
-    rank: number;
-    elementUrl: string;
+export interface SaveFilePal {
+    characterId: PalNameKeys;
+    isBoss: boolean;
+    isCapturedHuman: boolean;
+    gender: string;
+    level: number;
+    exp: number;
+    moves: SaveFilePalMoves;
+    talent: SaveFilePalTalents;
+    passiveSkillList: string[];
+    previousOwnerIds: string[];
+    ownerId: string;
+    craftSpeed: number;
+    craftSpeeds: SaveFilePalCraftSpeed[];
 }
 
-export interface PalMove {
-    name: string;
-    description: string;
-    elementUrl: string;
-}
+export type JsonWithPalNameKeys = Record<PalNameKeys, string>;

@@ -1,33 +1,32 @@
 import {Card} from "primereact/card";
-import {PalData} from "../../types.ts";
+import {SaveFilePal} from "../../types.ts";
 import PalCardHeader from "./header/PalCardHeader.tsx";
 import PalCardBody from "./body/PalCardBody.tsx";
+import {usePalCardDataFormatter} from "../../custom-hooks/usePalCardDataFormatter.ts";
 
-interface PalCardProps {
-    pal: PalData;
-}
+function PalCard({pal}: { pal: SaveFilePal }) {
+    const {name, exp, description, isCapturedHuman, characterId, level, gender, moves, craftSpeeds, talent, passiveSkillList} = usePalCardDataFormatter(pal);
 
-function PalCard({pal}: PalCardProps) {
     return (
         <Card
             pt={{root: {className: pal.isBoss ? 'bg-[#ff000022]' : null}}}
             className="px-4"
-            title={pal.name}
+            title={name}
         >
             <PalCardHeader
-                exp={pal.exp}
-                description={pal.description}
-                isCapturedHuman={pal.isCapturedHuman}
-                characterId={pal.characterId}
-                level={pal.level}
-                gender={pal.gender}
+                exp={exp}
+                description={description}
+                isCapturedHuman={isCapturedHuman}
+                characterId={characterId}
+                level={level}
+                gender={gender}
             />
 
             <PalCardBody
-                moves={pal.moves}
-                craftSpeeds={pal.craftSpeeds}
-                talent={pal.talent}
-                passiveSkillList={pal.passiveSkillList}
+                moves={moves}
+                craftSpeeds={craftSpeeds}
+                talent={talent}
+                passiveSkillList={passiveSkillList}
             />
         </Card>
     )
