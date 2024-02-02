@@ -1,11 +1,15 @@
 import {PalCardDataMove} from "../../../../../custom-hooks/usePalCardDataFormatter.ts";
 import PalCardBodyMove from "./PalCardBodyMove.tsx";
+import {Fieldset} from "primereact/fieldset";
 
 function PalCardBodyMovesContainer({moves}: { moves: PalCardDataMove[] }) {
     return (
-        <div className="p-2 mt-4 border">
-            <p><b>Moves</b></p>
-            <div className="w-fit m-auto">
+        <Fieldset legend="Moves" pt={{
+            legend: {className: 'py-0'},
+            root: {className: 'mt-4'},
+            content: {className: 'flex flex-wrap max-w-48 gap-2 justify-center'}
+        }}>
+            <div>
                 {
                     moves.map(({name, description, elementUrl}, palMoveIndex) =>
                         <PalCardBodyMove
@@ -17,7 +21,7 @@ function PalCardBodyMovesContainer({moves}: { moves: PalCardDataMove[] }) {
                     )
                 }
             </div>
-        </div>
+        </Fieldset>
     )
 }
 

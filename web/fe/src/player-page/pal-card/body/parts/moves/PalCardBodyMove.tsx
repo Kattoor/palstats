@@ -3,7 +3,7 @@ import {PalCardDataMove} from "../../../../../custom-hooks/usePalCardDataFormatt
 function PalCardBodyMove({name, description, elementUrl}: PalCardDataMove) {
     return (
         <div
-            className="tooltip flex gap-2 pt-1 w-fit"
+            className="tooltip flex gap-2 pt-1 w-fit text-left"
             data-pr-tooltip={description}
         >
             <img className="h-6 rounded-full tooltip" src={elementUrl}/>
