@@ -51,44 +51,6 @@ export const PlayerGuildProvider: FC<PropsWithChildren> = ({children}) => {
             {} as Record<string, string>
         );
 
-    /*function enrichWithPlayerData(player: SaveFilePlayer): SelectedPlayer {
-        return {
-            name: player.data.name,
-            pals: player.pals.map((pal) => ({
-                name: palNames[pal.characterId] || pal.characterId,
-                level: pal.level,
-                exp: pal.exp,
-                gender: pal.gender,
-                isBoss: pal.isBoss,
-                characterId: pal.characterId,
-                isCapturedHuman: pal.isCapturedHuman,
-                description: palDescriptions[pal.characterId],
-                moves: {
-                    equiped: pal.moves.equiped.map((id: string) => ({
-                        description: skillDescriptions['ACTION_SKILL_' + id],
-                        elementUrl: moveElementUrls[activeSkillsData['EPalWazaID::' + id].slice(17)],
-                        name: skillNames['ACTION_SKILL_' + id]
-                    }))
-                },
-                craftSpeeds: pal.craftSpeeds.map(({type, rank}: SaveFileCraftSpeed) => ({
-                    rank,
-                    type,
-                    elementUrl: workElementUrls[type]
-                })),
-                talent: {
-                    hp: pal.talent.hp,
-                    melee: pal.talent.melee,
-                    shot: pal.talent.shot,
-                    defense: pal.talent.defense
-                },
-                passiveSkillList: pal.passiveSkillList?.map((passiveSkillId: string) => ({
-                    name: skillNames['PASSIVE_' + passiveSkillId],
-                    description: skillDescriptions[passiveSkillId]
-                }))
-            }))
-        };
-    }*/
-
     return (
         <PlayerGuildContext.Provider
             value={{guilds, players, pals, palNames, palDescriptions, skillNames, activeSkillsData, skillDescriptions, workElementUrls, moveElementUrls}}>

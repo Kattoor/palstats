@@ -9,10 +9,7 @@ import RootPage from "./root-page/RootPage.tsx";
 import {PlayerGuildProvider} from "./custom-contexts/player-guild-context/PlayerGuildContext.tsx";
 import GuildPage from "./guild-page/GuildPage.tsx";
 import PlayerPage from "./player-page/PlayerPage.tsx";
-
-/* fieldset */
-/* dataview grid */
-
+import {PalFilterProvider} from "./custom-contexts/pal-filter-context/PalFilterContext.tsx";
 
 const router = createBrowserRouter([
     {
@@ -25,7 +22,7 @@ const router = createBrowserRouter([
     },
     {
         path: "/player/:id",
-        element: <PlayerPage/>
+        element: <PalFilterProvider><PlayerPage/></PalFilterProvider>
     }
 ]);
 

@@ -5,6 +5,7 @@ export interface PalCardDataMove {
     name: string;
     description: string;
     elementUrl: string;
+    type: string;
 }
 
 export type PalCardDataCraftSpeed = SaveFilePalCraftSpeed & { elementUrl: string };
@@ -23,7 +24,7 @@ interface AdditionalData {
 }
 
 export type PalCardData =
-    Pick<SaveFilePal, 'exp' | 'isCapturedHuman' | 'characterId' | 'level' | 'gender' | 'talent'>
+    Pick<SaveFilePal, 'exp' | 'isCapturedHuman' | 'characterId' | 'level' | 'gender' | 'talent' | 'isBoss'>
     & AdditionalData
 
 export function usePalCardDataFormatter(pal: SaveFilePal): PalCardData {
@@ -35,7 +36,8 @@ export function usePalCardDataFormatter(pal: SaveFilePal): PalCardData {
         moves: pal.moves.equiped.map((move) => ({
             name: skillNames[`ACTION_SKILL_${move}`],
             description: skillDescriptions[`ACTION_SKILL_${move}`],
-            elementUrl: moveElementUrls[activeSkillsData[`EPalWazaID::${move}`].slice(17)]
+            elementUrl: moveElementUrls[activeSkillsData[`EPalWazaID::${move}`].slice(17)],
+            type: activeSkillsData[`EPalWazaID::${move}`].slice(17)
         })),
         craftSpeeds: pal.craftSpeeds.map((craftSpeed) => ({
             ...craftSpeed,
@@ -51,7 +53,8 @@ export function usePalCardDataFormatter(pal: SaveFilePal): PalCardData {
         characterId: pal.characterId,
         level: pal.level,
         gender: pal.gender,
-        talent: pal.talent
+        talent: pal.talent,
+        isBoss: pal.isBoss
     }
 
 }
